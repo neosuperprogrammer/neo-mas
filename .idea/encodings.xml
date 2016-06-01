@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/neo-tas" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tas-client" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tas-common" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tas-filter" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tas-interceptor" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tas-license" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tas-monitor" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>

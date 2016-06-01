@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="user">
+	<typeAlias alias="hashmap" type="java.util.HashMap"/>
+	
+	<select id="getUserInfo" parameterClass="hashmap" resultClass="hashmap">
+		SELECT
+			U1.SAWONNO		ACCOUNT_ID
+		,	U1.NAME			EMPLOY_NAME
+		,	U1.USERIDNFR	ADDRESS_ID
+		,	U1.GROUPCOCD	GROUP_CODE
+		,	U2.FIELD13		EMPLOY_NO
+		,	U2.FIELD12		IS_EXCLUSIVE
+		,	U1.DEPTNAME		DEPT_NAME
+		,	U1.POSITION
+		,	U2.MAIL_SERVER
+		FROM
+			PMS.MPMS_USER_INFO10 U1 WITH (NOLOCK)
+		JOIN
+			PMS.MPMS_USER_INFO11 U2 WITH (NOLOCK)
+			ON
+				U1.SAWONNO = U2.SAWONNO
+		WHERE
+			<isNotNull property="ACCOUNT_ID">U1.SAWONNO = #ACCOUNT_ID#</isNotNull>
+			<isNotNull property="ADDRESS_ID">U1.USERIDNFR = #ADDRESS_ID#</isNotNull>
+		AND	U1.REGISTUSDSTCD = '10'
+	</select>
+</sqlMap>
+

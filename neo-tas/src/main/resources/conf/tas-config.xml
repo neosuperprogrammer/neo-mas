@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:cache="http://www.springframework.org/schema/cache" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:jms="http://www.springframework.org/schema/jms" xmlns:lang="http://www.springframework.org/schema/lang"
+       xmlns:oxm="http://www.springframework.org/schema/oxm" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:task="http://www.springframework.org/schema/task" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:camel="http://camel.apache.org/schema/spring" xmlns:amq="http://activemq.apache.org/schema/core"
+       xsi:schemaLocation="http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+		http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.1.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+		http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+
+       <context:annotation-config/>
+       <aop:aspectj-autoproxy proxy-target-class="true" />
+
+       <!--
+       #####################################################
+       #apache MINA TLS기반 SSL Filter 설정
+       #####################################################
+       -->
+       <bean id="keystoreFactory" class="org.apache.mina.filter.ssl.KeyStoreFactory">
+              <!--<property name="type" value="BKS"/>-->
+              <property name="password" value="btb1357"/>
+              <property name="dataUrl" value="classpath:mas.jks"/>
+       </bean>
+
+       <bean id="keyStore" factory-bean="keystoreFactory" factory-method="newInstance"/>
+
+       <bean id="bogusTrustManagerFactory" class="org.apache.mina.filter.ssl.BogusTrustManagerFactory"/>
+
+       <bean id="sslContextFactory" class="org.apache.mina.filter.ssl.SslContextFactory">
+              <property name="protocol" value="TLS"/>
+              <property name="keyManagerFactoryAlgorithm" value="SunX509"/>
+              <property name="keyManagerFactoryKeyStore"><ref local="keyStore"/></property>
+              <property name="keyManagerFactoryKeyStorePassword" value="btb1357"/>
+              <property name="trustManagerFactory"><ref local="bogusTrustManagerFactory"/></property>
+       </bean>
+
+       <bean id="sslContext" factory-bean="sslContextFactory" factory-method="newInstance"/>
+
+       <bean id="sslFilter" class="org.apache.mina.filter.ssl.SslFilter">
+              <constructor-arg ref="sslContext"/>
+       </bean>
+
+       <bean id="executorFilter" class="org.apache.mina.filter.executor.ExecutorFilter"/>
+       <bean id="tasLoggingFilter" class="com.tionsoft.mas.tas.filter.TasLoggingFilter"/>
+
+       <bean id="tasFilterChain" class="com.tionsoft.mas.tas.filter.TasFilterChain">
+              <property name="preFilters">
+                     <map>
+                            <entry key="executorFilter" value-ref="executorFilter" />
+                            <entry key="sslFilter" value-ref="sslFilter"/>
+                     </map>
+              </property>
+
+              <property name="codecFactory">
+                     <bean class="com.tionsoft.mas.tas.protocol.codec.TasDefaultCodecFactory"/>
+              </property>
+
+              <property name="postFilters">
+                     <map>
+                            <!--
+                            <entry key="tasLoggingFilter" value-ref="tasLoggingFilter" />
+                            -->
+                     </map>
+              </property>
+       </bean>
+
+       <!--
+       #####################################################
+       # apache MINA HandlerChain 설정
+       #####################################################
+       -->
+       <bean id="tasHandlerChain" class="com.tionsoft.mas.tas.handler.TasHandlerChain">
+              <property name="command">
+                     <bean class="com.tionsoft.mas.tas.handler.TasDefaultCommand"/>
+              </property>
+       </bean>
+
+       <bean id="tasBackgroundLoggingFilter"  class="com.tionsoft.mas.tas.filter.background.TasBackgroundLoggingFilter"/>
+       <bean id="tasBackgroundMonitoringFilter"  class="com.tionsoft.mas.tas.filter.background.TasBackgroundMonitoringFilter"/>
+       <bean id="messageStopWatchRepository" class="com.tionsoft.mas.tas.repository.MessageStopWatchRepository"/>
+
+       <bean id="tionsoftCommonFilterChain" class="com.tionsoft.platform.filter.TionsoftCommonFilterChain">
+              <property name="filters">
+                     <map>
+                            <entry key="tasBackgroundMonitoringFilter" value-ref="tasBackgroundMonitoringFilter"/>
+                            <entry key="tasBackgroundLoggingFilter" value-ref="tasBackgroundLoggingFilter"/>
+                     </map>
+              </property>
+       </bean>
+
+       <bean id="tasBackgroundQueueItemListener" class="com.tionsoft.mas.tas.queue.listener.TasBackgroundQueueItemListener" scope="prototype">
+              <constructor-arg index="0" value="10000"/>
+       </bean>
+
+       <bean id="queueItemListenerExecutor" class="com.tionsoft.platform.queue.listener.QueueItemListenerExecutor" init-method="create">
+              <constructor-arg index="0" value="10"/>
+              <constructor-arg index="1" value="100"/>
+              <constructor-arg index="2" ref="tasBackgroundQueueItemListener"/>
+       </bean>
+
+       <bean id="tasSpringContext" class="com.tionsoft.platform.context.TasSpringContext"/>
+
+       <task:annotation-driven scheduler="tasScheduler" />
+       <task:scheduler id="tasScheduler" pool-size="10"/>
+
+       <bean id="tmcApi" class="com.tionsoft.tmc.api.impl.TmcApiImpl">
+              <property name="baseUrl" value="http://127.0.0.1:8090"/>
+       </bean>
+
+       <bean id="authValidator" class="com.tionsoft.tmg.service.impl.AuthValidatorImpl">
+              <property name="tmcApi" ref="tmcApi"/>
+       </bean>
+       <!-- tcp/ip external interface configuration -->
+       <bean id="configuration" class="org.apache.commons.configuration.XMLConfiguration">
+              <constructor-arg>
+                     <value>conf/configuration.xml</value>
+              </constructor-arg>
+       </bean>
+
+       <!-- ibatis -->
+       <bean id="sqlDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+              <property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+              <!--<property name="url" value="jdbc:sqlserver://172.19.79.25:2433;database=LGDMOPDB;sendStringParametersAsUnicode=false;"/>-->
+              <property name="url" value="jdbc:sqlserver://172.19.78.214:3433;database=LGDMOPDB;sendStringParametersAsUnicode=false;"/>
+              <property name="username" value="pmg"/>
+              <property name="password" value="pmg123!@#" />
+              <property name="maxActive" value="10"/>
+              <property name="maxWait" value="5000"/>
+              <property name="maxIdle" value="30"/>
+              <property name="validationQuery" value="select 1"/>
+              <property name="testOnBorrow" value="true"/>
+       </bean>
+
+       <bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+              <property name="dataSource"><ref bean="sqlDataSource"/></property>
+              <property name="configLocation" value="classpath:sqlmap-config.xml"/>
+       </bean>
+
+       <bean id="commandDao" class="com.tionsoft.tmg.dao.impl.CommandDaoImpl">
+              <property name="sqlMapClient" ref="sqlMapClient"/>
+       </bean>
+
+       <!-- 자체 DB 테이블에 AuthKey 관리 -->
+       <bean id="userDao" class="com.tionsoft.tmg.dao.impl.UserDaoImpl">
+              <property name="sqlMapClient" ref="sqlMapClient"/>
+       </bean>
+
+       <bean id="phoneMapper" class="com.tionsoft.tmg.util.PhoneMapper">
+              <property name="configuration" ref="configuration"/>
+       </bean>
+
+       <bean id="commandService" class="com.tionsoft.tmg.service.impl.CommandServiceImpl">
+              <property name="configuration" ref="configuration"/>
+              <property name="commandDao" ref="commandDao"/>
+              <property name="userDao" ref="userDao"/>
+              <property name="phoneMapper" ref="phoneMapper"/>
+       </bean>
+
+
+       <bean id="relayService" class="com.tionsoft.tmg.service.impl.DominoRelayServiceImpl">
+              <property name="configuration" ref="configuration"/>
+              <property name="userDao" ref="userDao"/>
+       </bean>
+
+       <bean id="tdvClient" class="com.tionsoft.tdv.client.TdvClientLite">
+              <property name="configuration" ref="configuration"/>
+       </bean>
+
+
+       <bean id="boardDao" class="com.tionsoft.tmg.dao.impl.BoardDaoImpl">
+              <property name="sqlMapClient" ref="sqlMapClient"/>
+       </bean>
+
+       <bean id="edmsClient" class="com.tionsoft.lgd.Edms">
+              <property name="configuration" ref="configuration"/>
+       </bean>
+
+       <bean id="boardService" class="com.tionsoft.tmg.service.impl.BoardServiceImpl">
+              <property name="configuration" ref="configuration"/>
+              <property name="boardDao" ref="boardDao"/>
+              <property name="edmsClient" ref="edmsClient"/>
+       </bean>
+
+       <bean id="udockClient" class="com.tionsoft.lgd.UDock">
+              <property name="configuration" ref="configuration"/>
+       </bean>
+
+       <!-- commands -->
+       <bean id="A002.AUTH00002" class="com.tionsoft.tmg.command.impl.AUTH00002">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.AUTH00003" class="com.tionsoft.tmg.command.impl.AUTH00003">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.ADDR00016" class="com.tionsoft.tmg.command.impl.ADDR00016">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+       <bean id="A002.ADDR00017" class="com.tionsoft.tmg.command.impl.ADDR00017">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+       <bean id="A002.ADDR00018" class="com.tionsoft.tmg.command.impl.ADDR00018">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.COM000001" class="com.tionsoft.tmg.command.impl.COM000001">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+              <property name="relayService" ref="relayService"/>
+       </bean>
+       <!--bean id="A003.COM000001" class="com.tionsoft.tmg.command.impl.COM000001">
+           <property name="configuration" ref="configuration"/>
+           <property name="authValidator" ref="authValidator"/>
+           <property name="commandService" ref="commandService"/>
+           <property name="relayService" ref="relayService"/>
+       </bean-->
+
+       <bean id="A002.COM000002" class="com.tionsoft.tmg.command.impl.COM000002">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.MAIL00000" class="com.tionsoft.tmg.command.impl.Relay">
+              <property name="configuration" ref="configuration"/>
+              <property name="relayService" ref="relayService"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+       <bean id="A002.MAIL00001" class="com.tionsoft.tmg.command.impl.Relay">
+              <property name="configuration" ref="configuration"/>
+              <property name="relayService" ref="relayService"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+       <bean id="A002.MAIL00002" class="com.tionsoft.tmg.command.impl.Relay">
+              <property name="configuration" ref="configuration"/>
+              <property name="relayService" ref="relayService"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+       <bean id="A002.MAIL00003" class="com.tionsoft.tmg.command.impl.MAIL00003">
+              <property name="configuration" ref="configuration"/>
+              <property name="relayService" ref="relayService"/>
+              <property name="commandService" ref="commandService"/>
+              <property name="authValidator" ref="authValidator"/>
+       </bean>
+       <bean id="A002.MAIL00005" class="com.tionsoft.tmg.command.impl.Relay">
+              <property name="configuration" ref="configuration"/>
+              <property name="relayService" ref="relayService"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+       <bean id="A002.MAIL00006" class="com.tionsoft.tmg.command.impl.Relay">
+              <property name="configuration" ref="configuration"/>
+              <property name="relayService" ref="relayService"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+       <bean id="A002.MAIL00007" class="com.tionsoft.tmg.command.impl.Relay">
+              <property name="configuration" ref="configuration"/>
+              <property name="relayService" ref="relayService"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+       <bean id="A002.MAIL00026" class="com.tionsoft.tmg.command.impl.Relay">
+              <property name="configuration" ref="configuration"/>
+              <property name="relayService" ref="relayService"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+       <bean id="A002.MAIL00027" class="com.tionsoft.tmg.command.impl.Relay">
+              <property name="configuration" ref="configuration"/>
+              <property name="relayService" ref="relayService"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+       <bean id="A002.MAIL00028" class="com.tionsoft.tmg.command.impl.Relay">
+              <property name="configuration" ref="configuration"/>
+              <property name="relayService" ref="relayService"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+       <bean id="A002.MAIL00029" class="com.tionsoft.tmg.command.impl.Relay">
+              <property name="configuration" ref="configuration"/>
+              <property name="relayService" ref="relayService"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+       <bean id="A002.MAIL00030" class="com.tionsoft.tmg.command.impl.Relay">
+              <property name="configuration" ref="configuration"/>
+              <property name="relayService" ref="relayService"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.MAIL00101" class="com.tionsoft.tmg.command.impl.MAIL00101">
+              <property name="configuration" ref="configuration"/>
+              <property name="relayService" ref="relayService"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.MAIL00103" class="com.tionsoft.tmg.command.impl.Relay">
+              <property name="configuration" ref="configuration"/>
+              <property name="relayService" ref="relayService"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.MAIL00104" class="com.tionsoft.tmg.command.impl.Relay">
+              <property name="configuration" ref="configuration"/>
+              <property name="relayService" ref="relayService"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.FILE00001" class="com.tionsoft.tmg.command.impl.FILE00001">
+              <property name="configuration" ref="configuration"/>
+              <property name="tdvClient" ref="tdvClient"/>
+              <property name="udockClient" ref="udockClient"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.PUSH00001" class="com.tionsoft.tmg.command.impl.PUSH00001">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.PUSH00002" class="com.tionsoft.tmg.command.impl.PUSH00002">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.PUSH00003" class="com.tionsoft.tmg.command.impl.PUSH00003">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.BBS000001" class="com.tionsoft.tmg.command.impl.BBS000001">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="boardService" ref="boardService"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.BBS000002" class="com.tionsoft.tmg.command.impl.BBS000002">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="boardService" ref="boardService"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.BBS000003" class="com.tionsoft.tmg.command.impl.BBS000003">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="boardService" ref="boardService"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.BBS000004" class="com.tionsoft.tmg.command.impl.BBS000004">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="boardService" ref="boardService"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.BBS000007" class="com.tionsoft.tmg.command.impl.BBS000007">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="boardService" ref="boardService"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.BBS000008" class="com.tionsoft.tmg.command.impl.BBS000008">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="boardService" ref="boardService"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+
+       <bean id="A002.BBS000009" class="com.tionsoft.tmg.command.impl.BBS000009">
+              <property name="configuration" ref="configuration"/>
+              <property name="authValidator" ref="authValidator"/>
+              <property name="boardService" ref="boardService"/>
+              <property name="commandService" ref="commandService"/>
+       </bean>
+</beans>

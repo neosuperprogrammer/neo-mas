@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="euc-kr" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <appender name="console-appender" class="org.apache.log4j.ConsoleAppender">
+        <param name="Target" value="System.out" />
+        <param name="encoding" value="UTF-8" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss}][%-5p] %C.%M(%L) | %m%n" />
+        </layout>
+    </appender>
+
+    <appender name="tas-monitor-appender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="./logs/tas-monitor.log" />
+        <param name="Append" value="true" />
+        <param name="DatePattern" value="'.'yyyy-MM-dd" />
+        <param name="encoding" value="UTF-8" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss}] [%-5p] %C.%M(%L) | %m%n" />
+        </layout>
+    </appender>
+
+    <appender name="error-appender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="./logs/error.log" />
+        <param name="Append" value="true" />
+        <param name="DatePattern" value="'.'yyyy-MM-dd" />
+        <param name="encoding" value="UTF-8" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss}] [%-5p] %C.%M(%L) | %m%n" />
+        </layout>
+    </appender>
+
+    <appender name="sql-appender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="./logs/sql.log" />
+        <param name="Append" value="true" />
+        <param name="DatePattern" value="'.'yyyy-MM-dd" />
+        <param name="encoding" value="UTF-8" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss}] [%-5p] %C.%M(%L) | %m%n" />
+        </layout>
+    </appender>
+
+    <!-- logger -->
+    <logger name="org.springframework">
+        <level value="WARN" />
+    </logger>
+
+    <logger name="org.springframework.cache">
+        <level value="WARN" />
+    </logger>
+
+    <logger name="org.springframework.core">
+        <level value="WARN" />
+    </logger>
+
+    <logger name="org.springframework.core.io">
+        <level value="WARN" />
+    </logger>
+
+    <logger name="org.springframework.beans">
+        <level value="WARN" />
+    </logger>
+
+    <logger name="org.springframework.scheduling">
+        <level value="WARN" />
+    </logger>
+
+    <logger name="org.springframework.context">
+        <level value="WARN" />
+    </logger>
+
+    <logger name="com.tionsoft.mas.tas">
+        <level value="DEBUG" />
+        <appender-ref ref="tas-monitor-appender" />
+    </logger>
+
+    <!-- category -->
+    <category name="org.apache">
+        <priority value="WARN" />
+    </category>
+
+    <category name="org.infinispan">
+        <priority value="WARN" />
+    </category>
+
+    <category name="org.jgroups">
+        <priority value="WARN" />
+    </category>
+
+    <category name="java.sql">
+        <priority value="WARN" />
+        <appender-ref ref="sql-appender" />
+    </category>
+
+    <category name="com.ibatis">
+        <priority value="WARN" />
+        <appender-ref ref="sql-appender" />
+    </category>
+
+    <category name="org.apache.mina">
+        <priority value="INFO" />
+    </category>
+
+
+    <category name="error">
+        <priority value="DEBUG" />
+        <appender-ref ref="error-appender" />
+    </category>
+
+    <root>
+        <level value="INFO" />
+        <appender-ref ref="console-appender" />
+    </root>
+</log4j:configuration>

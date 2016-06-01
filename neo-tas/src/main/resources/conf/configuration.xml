@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration-definition>
+	<configuration>
+		<!-- Domino I/F Service URL -->
+		<legacy>
+			<urls>
+				<url_0><![CDATA[http://modominoif2.lgdisplay.com/mobileif/mobile_gateway_0.nsf/domino_if?openform&Seq=1]]></url_0>
+				<url_1><![CDATA[http://modominoif2.lgdisplay.com/mobileif/mobile_gateway_1.nsf/domino_if?openform&Seq=1]]></url_1>
+				<url_2><![CDATA[http://modominoif2.lgdisplay.com/mobileif/mobile_gateway_2.nsf/domino_if?openform&Seq=1]]></url_2>
+				<url_3><![CDATA[http://modominoif2.lgdisplay.com/mobileif/mobile_gateway_3.nsf/domino_if?openform&Seq=1]]></url_3>
+				<url_4><![CDATA[http://modominoif2.lgdisplay.com/mobileif/mobile_gateway_4.nsf/domino_if?openform&Seq=1]]></url_4>
+				<url_5><![CDATA[http://modominoif2.lgdisplay.com/mobileif/mobile_gateway_5.nsf/domino_if?openform&Seq=1]]></url_5>
+				<url_6><![CDATA[http://modominoif2.lgdisplay.com/mobileif/mobile_gateway_6.nsf/domino_if?openform&Seq=1]]></url_6>
+				<url_7><![CDATA[http://modominoif2.lgdisplay.com/mobileif/mobile_gateway_7.nsf/domino_if?openform&Seq=1]]></url_7>
+				<url_8><![CDATA[http://modominoif2.lgdisplay.com/mobileif/mobile_gateway_8.nsf/domino_if?openform&Seq=1]]></url_8>
+				<url_9><![CDATA[http://modominoif2.lgdisplay.com/mobileif/mobile_gateway_9.nsf/domino_if?openform&Seq=1]]></url_9>
+				<url_officers><![CDATA[http://modominoif1.lgdisplay.com/mobileif/mobile_gateway.nsf/domino_if?openform&Seq=1]]></url_officers>
+			</urls>
+		</legacy>
+		
+		<http>
+			<connectTimeout>10000</connectTimeout>
+			<socketTimeout>10000</socketTimeout>
+		</http>
+		
+		<!-- 결재 모바일웹앱 URL -->
+		<approveService>
+			<url>about:blank</url>
+		</approveService>
+		
+		<!-- 주소록 사진조회 BASE URL -->
+		<address>
+			<photo>
+				<baseUrl>http://portal.lgdisplay.com:8080/common/FileDownload.do?fileId=</baseUrl>
+				<localUrl>http://172.19.71.193:13001/userPhoto/</localUrl>
+			</photo>
+			<phoneMap>
+				<path>/Users/neox/deploy/neo-mas/conf/phone_map.properties</path>
+			</phoneMap>
+		</address>
+		
+		<!-- 기본데이터 -->
+		<default>
+			<!-- 기본 날짜 형식 -->
+			<dateFormat>yyyyMMdd</dateFormat>
+			<!-- 푸시 기본 설정 시간 -->
+			<allowPushTime>0800-1800</allowPushTime>
+			<allowPushDate>
+				<weekday0>no</weekday0>		<!-- 일요일 -->
+				<weekday1>yes</weekday1>	<!-- 월요일 -->
+				<weekday2>yes</weekday2>	<!-- 화요일 -->
+				<weekday3>yes</weekday3>	<!-- 수요일 -->
+				<weekday4>yes</weekday4>	<!-- 목요일 -->
+				<weekday5>yes</weekday5>	<!-- 금요일 -->
+				<weekday6>no</weekday6>		<!-- 토요일 -->
+			</allowPushDate>
+			<encoding>utf-8</encoding>
+			<scheduleBody>
+				<front></front>
+				<rear></rear>
+			</scheduleBody>
+			<exception>
+				<includeOutByteMessages>ADDR00018,FILE00001</includeOutByteMessages>
+			</exception>
+		</default>
+		
+		<!-- 이미지 호스팅 URL -->
+		<image>
+			<mail>
+				<baseUrl>http://115.91.28.44:13002/tmg/mail/images</baseUrl>
+				<downloadTempPath>D:/data/TIONSOFT_PublicImgs/tmg/mail/images</downloadTempPath>
+				<downloadPath>D:/data/TIONSOFT_PublicImgs/tmg/mail/images</downloadPath>
+			</mail>
+			<board>
+				<baseUrl>http://115.91.28.44:13002/tmg/board/images</baseUrl>
+				<downloadTempPath>D:/data/TIONSOFT_PublicImgs/tmg/board/images</downloadTempPath>
+				<downloadPath>D:/data/TIONSOFT_PublicImgs/tmg/board/images</downloadPath>
+			</board>
+			<internalDomain>lgdisplay.com,172.19.79.25,lgcns.com</internalDomain>
+		</image>
+		
+		<!-- 게시판 서비스 대상 -->
+		<board>
+			<!-- LGD Notice, 지역생활정보 -->
+			<id>1220429351776</id>
+			<default>1220429351776</default>
+	
+			<!-- 운영계 / 개발계
+			<id>1220429351776</id>
+			<default>1220429351776</default>
+			<id>1251935384683</id> 
+			<default>1251935384683</default>
+			-->
+
+			<!-- 법인별 게시판 적용 시
+			<default>1220429351776</default>
+			<KO_KR>1220429351776</KO_KR>
+			<EN_US>1253584320224</EN_US>
+			<PL_PL>1253584320237</PL_PL>
+			<ZH_CN>
+				<NJ>1261017378630</NJ>
+				<GZ>1253606464852</GZ>
+				<YT>1277982916394</YT>
+				<CA>1358638979935</CA>
+			</ZH_CN>
+ 			-->
+ 		</board>
+		
+		<schedule>
+			<private>
+				<default>비공개</default>
+				<KO_KR>비공개</KO_KR>
+				<EN_US>Private</EN_US>
+				<ZH_CN>非公开</ZH_CN>
+				<JA_JP>プライベート</JA_JP>
+				<PL_PL>非公开</PL_PL>
+			</private>
+		</schedule>
+		
+		<!-- TDV 서비스 URL -->
+		<tdv>
+			<server>
+				<url>http://172.19.71.190:10000/PDVJsonService.aspx</url>
+			</server>
+			<pdf>
+				<domain>PDF_DOWNLOAD</domain>
+				<baseUrl>http://115.91.28.37:13001/tmg/pdf/download</baseUrl>
+				<downloadPath>F:/data/TIONSOFT_PublicImgs/tmg/pdf/download</downloadPath>
+			</pdf>
+			<excel>
+				<domain>EXCEL_DOWNLOAD</domain>
+				<baseUrl>http://115.91.28.37:13001/tmg/excel/download</baseUrl>
+				<downloadPath>F:/data/TIONSOFT_PublicImgs/tmg/excel/download</downloadPath>
+			</excel>
+			<edm>
+				<domain>EDM_DOWNLOAD</domain>
+				<baseUrl>http://115.91.28.37:13001/tmg/edm/download</baseUrl>
+				<downloadPath>F:/data/TIONSOFT_PublicImgs/tmg/edm/download</downloadPath>
+			</edm>
+		</tdv>
+		
+		<tmc-api>
+			<server>
+				<url>http://127.0.0.1:8090</url>
+			</server>
+		</tmc-api>
+		
+		<!-- EDMS -->
+		<edms>
+			<url>http://172.19.68.78:9700/servlet/MobileService</url>
+			<downloadPath>F:/data/TIONSOFT_PublicImgs/tmg/board/udock</downloadPath>
+			<downloadUrl>http://172.19.71.193:13001/tmg/board/udock</downloadUrl>
+			<systemCode>B1500</systemCode>
+		</edms>
+		
+		<!-- UDOCK -->
+		<udock>
+			<prefix>EDM_</prefix>
+			<postfix>.html</postfix>
+			<systemCode>C200</systemCode>
+			<viewViersion>L</viewViersion>
+			<alterUrl>http://edms5.lgdisplay.com:8080/Servlet/MobileDownload</alterUrl>
+			<permissionUrl>http://edms.lgdisplay.com:8080/edms/service/getPermit.jsp</permissionUrl>
+		</udock>
+
+		<messages>
+			<support>default|ko_KR</support>
+			<basePath>D:/engn/TIONSOFT Mobile Groupware/tas/tcpapps/tmg/conf</basePath>
+		</messages>
+		
+		<!-- 국가별 사업장의 메일 서버 시간대역 -->
+		<server-timezone>
+			<timezone>unknown kr cn eu us rs</timezone>
+			<time>
+				<unknown>GMT+0900</unknown>
+				<kr>GMT+0900</kr>				<!-- 한국 -->
+				<cn>GMT+0800</cn>				<!-- 중국 -->
+				<us>GMT-0800</us>				<!-- 미국(태평양) -->
+				<rs>GMT-0600</rs>				<!-- 멕시코 -->
+				<eu>GMT+0100</eu>				<!-- 폴란드 -->
+			</time>
+			<location>
+				<unknown>Asia/Seoul</unknown>
+				<kr>Asia/Seoul</kr>				<!-- 한국 -->
+				<cn>Asia/Shanghai</cn>			<!-- 중국 -->
+				<us>America/Los_Angeles</us>	<!-- 미국(태평양) -->
+				<rs>America/Mexico_City</rs>	<!-- 멕시코 -->
+				<eu>Europe/Warsaw</eu>			<!-- 폴란드 -->
+			</location>
+			<servers>
+				<unknown>unknown</unknown>
+				<kr>GWKUMI07 UCKR01P UCKR01S UCKR02P UCKR02S UCKR03P UCKR03S UCKR04P UCKR04S UCKR05P UCKR05S UCKR06P UCKR06S UCKR07P UCKR07S UCKR08P UCKR08S UCKR09P UCKR09S UCKR10P UCKR10S UCKR11P UCKR11S UCKR12P UCKR12S UCKR13P UCKR13S UCKR14P UCKR14S UCKR15P UCKR15S UCKR16P UCKR16S UCKR17P UCKR17S UCKR18P UCKR18S UCKR19P UCKR19S UCKR20P UCKR20S UCKR21P UCKR21S UCKR23P UCKR23S UCKR24P UCKRTEST01 UCKRTEST02</kr>
+				<cn>UCCN01P UCCN01S UCCN02P UCCN02S UCCN03P UCCN03S UCCN04P UCCN04S UCCN05P UCCN05S UCCN06P UCCN06S UCCN07P UCCN07S UCCN08P UCCN08S UCCN09P UCCN09S UCCN10P UCCN10S UCCN11S UCCN12P UCCN12S</cn>
+				<eu>UCEU01P UCEU01S UCEU02P UCEU02S</eu>
+				<us>UCUS01P UCUS01S</us>
+				<rs>GWMEXICO01</rs>
+			</servers>
+		</server-timezone>
+	</configuration>
+</configuration-definition>

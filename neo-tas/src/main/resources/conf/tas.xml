@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="euc-kr" ?>
+
+<server-definition>
+	<tcpapps>
+		<tcpapp name="test" base="." ip="127.0.0.1"
+				port="14000" sendBufferSize="10240" recvBufferSize="10240" reuseAddress="false" tcpNoDely="true" backlog="1000" >
+			<connection>
+				<timeout>1800</timeout><!--30 minutes(second)-->
+			</connection>
+		
+			<session>
+				<timeout>200000</timeout><!-- 20 second(milli-second)-->
+			</session>
+		
+			<cluster>
+				<enable>false</enable>
+				<name>ClusterA</name>
+     			<machineId>Server01</machineId>
+     			<rackId>Rack01</rackId>
+     			<siteId>Site01</siteId>
+     			<numOwners>2</numOwners><!-- cluster owners -->
+			</cluster>
+			
+			<shareMemory>
+				<keepAliveTime>200000</keepAliveTime>
+			</shareMemory>
+			
+		</tcpapp>
+	</tcpapps>
+	
+</server-definition>

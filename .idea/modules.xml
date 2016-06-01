@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/neo-mas.iml" filepath="$PROJECT_DIR$/.idea/neo-mas.iml" />
+      <module fileurl="file://$PROJECT_DIR$/neo-tas/neo-tas.iml" filepath="$PROJECT_DIR$/neo-tas/neo-tas.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tas-client/tas-client.iml" filepath="$PROJECT_DIR$/tas-client/tas-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tas-common/tas-common.iml" filepath="$PROJECT_DIR$/tas-common/tas-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tas-filter/tas-filter.iml" filepath="$PROJECT_DIR$/tas-filter/tas-filter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tas-interceptor/tas-interceptor.iml" filepath="$PROJECT_DIR$/tas-interceptor/tas-interceptor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tas-license/tas-license.iml" filepath="$PROJECT_DIR$/tas-license/tas-license.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tas-monitor/tas-monitor.iml" filepath="$PROJECT_DIR$/tas-monitor/tas-monitor.iml" />
+    </modules>
+  </component>
+</project>
